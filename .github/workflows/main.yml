@@ -1,0 +1,36 @@
+name: Validate Issue Format and Post Comment
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  check-issue-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --prod
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Validate Issue Format and Post Comment
+        run: node dist/index.js
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

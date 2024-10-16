@@ -1,0 +1,17 @@
+{
+  "issue": {
+    "id": 1,
+    "number": 1,
+    "title": "Issue 1",
+    "body": "### LOG\n2024-10-10 09:00 to 11:00\nDescription\n###",
+    "user": {
+      "id": 1,
+      "login": "johndoe"
+    }
+  },
+  "comment": {
+    "id": 1,
+    "body": "### LOG\n2024-10-10 09:00 to 11:00\nDescription\n###",
+    "user": { "id": 1, "login": "johndoe" }
+  }
+}
