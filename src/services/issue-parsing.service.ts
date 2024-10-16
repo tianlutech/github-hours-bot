@@ -12,9 +12,11 @@ function validateDates(datesMatch: string[]):
     const [datePart, fromTime, toTime] = date
       .split(" ")
       .filter((part) => part !== "to");
+    console.log(datePart, fromTime, toTime);
+
     return {
-      from: moment(`${datePart}T${fromTime}`),
-      to: moment(`${datePart}T${toTime}`),
+      from: moment(`${datePart}T${fromTime}`, "YYYY-MM-DDTHH:mm"),
+      to: moment(`${datePart}T${toTime}`, "YYYY-MM-DDTHH:mm"),
     };
   });
 
@@ -41,13 +43,13 @@ export function parseIssue(issueBody: string): HourLogResult {
   }
 
   const logPattern =
-    /### LOG\s*((?:\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}\sto\s\d{2}:\d{2}\s?)+)\n([\s\S]*?)\s*###/;
+    /### LOG\s*((?:\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}\sto\s\d{2}:\d{2}\s?)+)\n([\s\S]*?)\s*(?:\s*###|\s*$)/;
   const match = issueBody.match(logPattern);
 
   if (!match) {
     return {
       error:
-        "Format invalid, first line should be an address, second the description",
+        "Format invalid, first line should be the date, second the description",
     };
   }
 

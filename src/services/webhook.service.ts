@@ -24,6 +24,9 @@ export default class WebhookService {
       repository: repo,
       issueId: issue.id,
       issueName: issue.title,
+      commentId: comment.id,
+      commentUrl: comment.url,
+      issueUrl: issue.url,
       authorId: comment.user.id,
       authorName: comment.user.login,
       logDates: hourLog.dates,
@@ -31,6 +34,15 @@ export default class WebhookService {
     };
     try {
       const response = await axios.post(ENV.WEBHOOK_URL, data);
+      if (response.status !== 200) {
+        return {
+          error: `Call Failed${response.status} - ${
+            response.data
+              ? JSON.stringify(response.data, null, 4)
+              : response.statusText
+          }`,
+        };
+      }
       return { success: true };
     } catch (error) {
       return { error: (error as Error).message };

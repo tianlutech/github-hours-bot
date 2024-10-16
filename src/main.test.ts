@@ -4,8 +4,6 @@ import { createContext, seedEnv } from "./tests/test.factory";
 import { mockedAxios, mockGithub } from "./tests/setup-test";
 import { main } from "./main";
 import { HourLogError } from "./types";
-import { context } from "@actions/github";
-import { ENV } from "./services/env";
 
 describe("GITHUB HOUR LOG", () => {
   describe("PARSE ISSUE", () => {

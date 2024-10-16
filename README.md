@@ -26,6 +26,11 @@ Set up the .env file with the GITHUB_TOKEN and WEBHOOK_URL
 GITHUB_TOKEN=xxxx
 WEBHOOK_URL=xxxx
 ```
+
+To test in local you may need to generate a personal access token,
+in the pipeline he will use your user github token.
+
+Use a webhook that you can call from local so act will not fail.
  
 Run the project, this will watch for changes.
 
@@ -35,6 +40,12 @@ Run the project, this will watch for changes.
 
 This will run the project in a container architecture
 
-> act issues --secret-file .env --container-architecture linux/amd64 --eventpath event.json
+> act issue_comment --secret-file .env --eventpath event.jsonevent.json
+
+Mac users may add `--container-architecture linux/amd64 `
 
 For specific scenarios make test cases
+
+## Stack
+
+- [Octokit to interact with Issues](https://octokit.github.io/rest.js/v21)
