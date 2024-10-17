@@ -8,7 +8,11 @@ on:
         required: true
         default: true
         type: boolean
-
+      skip_bump:
+        description: "Skip the version bump (true/false)"
+        required: true
+        default: false
+        type: boolean
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -39,30 +43,34 @@ jobs:
       - name: Install standard-version
         run: pnpm install --global standard-version
 
-      - name: Run standard-version
-        run: standard-version
-
-      - name: Push changes and tags
-        run: |
-          git push
-          git push --tags
-          echo "LATEST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
-
       - name: Install dependencies
         run: pnpm install
 
       - name: Build project
         run: pnpm build
 
+      - name: Run standard-version
+        if: ${{ github.event.inputs.skip_bump == false }}
+        run: standard-version
+
+      - name: Push changes and tags
+        run: |
+          git push
+          git push --tags
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          echo "Latest tag: $LATEST_TAG"
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+
       - name: Zip project
-        run: zip -r project.zip . -x "node_modules/*" ".git/*"
+        run: zip -r project.zip dist/*
 
       - name: Create GitHub Release
         if: ${{ github.event.inputs.create_github_release == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v${{ steps.get_latest_tag.outputs.LATEST_TAG }} \
-          --title "Release v${{ steps.get_latest_tag.outputs.LATEST_TAG }}" \
-          --generate-notes
-          project.zip
+          echo "Generating release notes for tag: $LATEST_TAG"
+          gh release create v$LATEST_TAG \
+          --title "Release v$LATEST_TAG" \
+          --generate-notes \
+            --files project.zip
