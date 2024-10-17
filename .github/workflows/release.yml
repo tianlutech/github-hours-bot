@@ -37,10 +37,10 @@ jobs:
           git config user.email github-actions@github.com
 
       - name: Install standard-version
-        run: pnpm add --no-save standard-version
+        run: pnpm install --global standard-version
 
       - name: Run standard-version
-        run: npx standard-version
+        run: standard-version
 
       - name: Push changes and tags
         run: |
