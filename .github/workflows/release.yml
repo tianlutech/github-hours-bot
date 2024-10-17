@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      create_github_release:
+        description: "Create a GitHub Release (true/false)"
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Install standard-version
+        run: pnpm add --no-save standard-version
+
+      - name: Run standard-version
+        run: npx standard-version
+
+      - name: Push changes and tags
+        run: |
+          git push
+          git push --tags
+          echo "LATEST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Zip project
+        run: zip -r project.zip . -x "node_modules/*" ".git/*"
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.create_github_release == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v${{ steps.get_latest_tag.outputs.LATEST_TAG }} \
+          --title "Release v${{ steps.get_latest_tag.outputs.LATEST_TAG }}" \
+          --generate-notes
+          project.zip

@@ -30,6 +30,7 @@ export default class WebhookService {
       authorId: comment.user.id,
       authorName: comment.user.login,
       logDates: hourLog.dates,
+      logHours: hourLog.hours,
       logDescription: hourLog.description,
     };
     try {

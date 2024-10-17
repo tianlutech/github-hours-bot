@@ -1,0 +1,43 @@
+name: Log Hours
+
+on:
+  workflow_call:
+    inputs:
+      issue_number:
+        required: true
+        type: number
+      comment_id:
+        required: true
+        type: number
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      WEBHOOK_URL:
+        required: true
+jobs:
+  log-hours:
+    runs-on: ubuntu-latest
+    if: |
+      inputs.event_name == 'issue_comment' &&
+      (inputs.event_action == 'created' || inputs.event_action == 'edited') &&
+      contains(inputs.comment_body, '[LOG]')
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Download pipe.js
+        run: |
+          SCRIPT_URL="https://github.com/yourusername/yourrepo/releases/download/${{ inputs.script_version }}/pipe.js"
+          curl -L -o pipe.js $SCRIPT_URL
+
+      - name: Log Hours
+        run: node pipe.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}

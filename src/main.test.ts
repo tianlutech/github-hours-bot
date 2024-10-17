@@ -9,23 +9,24 @@ describe("GITHUB HOUR LOG", () => {
   describe("PARSE ISSUE", () => {
     it("ERROR: Invalid Format", () => {
       const parseIssueError = parseIssue as (body: string) => HourLogError;
-      expect(parseIssueError("### LOG\n")?.error).toMatch(/^Format invalid/);
-      expect(parseIssueError("### LOG 2123123 \ndssd asdasd\n")?.error).toMatch(
+      expect(parseIssueError("[LOG]\n")?.error).toMatch(/^Format invalid/);
+      expect(parseIssueError("[LOG] 2123123 \ndssd asdasd\n")?.error).toMatch(
         /^Format invalid/
       );
       expect(
-        parseIssueError("### LOG 2024 10:00 \ndssd asdasd\n")?.error
+        parseIssueError("[LOG] 2024 10:00 \ndssd asdasd\n")?.error
       ).toMatch(/^Format invalid/);
       expect(
-        parseIssueError("### LOG 2024 10:00 to 11:2 \ndssd asdasd\n")?.error
+        parseIssueError("[LOG] 2024 10:00 to 11:2 \ndssd asdasd\n")?.error
       ).toMatch(/^Format invalid/);
-      expect(parseIssueError("### LOG 2024 10:00 to 11:20")?.error).toMatch(
+      expect(parseIssueError("[LOG] 2024 10:00 to 11:20")?.error).toMatch(
         /^Format invalid/
       );
     });
     it("OK: Parse Simple Issue", () => {
-      const input = "### LOG\n2024-10-10 09:00 to 11:00\nHello World\n###";
+      const input = "[LOG]\n2024-10-10 09:00 to 11:00\nHello World\n[LOG]";
       const expected = {
+        hours: 2,
         dates: [
           {
             from: moment("2024-10-10T09:00").toISOString(),
@@ -38,8 +39,24 @@ describe("GITHUB HOUR LOG", () => {
       expect(result).toEqual(expected);
     });
 
+    it("OK: Parse Without Ending", () => {
+      const input = "[LOG]\n2024-10-10 09:00 to 11:00\nHello World";
+      const expected = {
+        dates: [
+          {
+            from: moment("2024-10-10T09:00").toISOString(),
+            to: moment("2024-10-10T11:00").toISOString(),
+          },
+        ],
+        hours: 2,
+        description: "Hello World",
+      };
+      const result = parseIssue(input);
+      expect(result).toEqual(expected);
+    });
+
     it("ERROR: Date with issue return error", () => {
-      const input = "### LOG\n2024-34-12 09:88 to 11:00\nHello World\n###";
+      const input = "[LOG]\n2024-34-12 09:88 to 11:00\nHello World\n[LOG]";
       const expected = {
         error: "Date 0 from is not valid",
       };
@@ -49,7 +66,7 @@ describe("GITHUB HOUR LOG", () => {
 
     it("OK: Parse Several Dates", () => {
       const input =
-        "### LOG\n2024-10-10 09:00 to 11:00\n2024-10-11 09:00 to 11:00\nHello World\n###";
+        "[LOG]\n2024-10-10 09:00 to 11:00\n2024-10-11 12:00 to 14:00\nHello World\n[LOG]";
       const expected = {
         dates: [
           {
@@ -57,11 +74,12 @@ describe("GITHUB HOUR LOG", () => {
             to: moment("2024-10-10T11:00").toISOString(),
           },
           {
-            from: moment("2024-10-11T09:00").toISOString(),
-            to: moment("2024-10-11T11:00").toISOString(),
+            from: moment("2024-10-11T12:00").toISOString(),
+            to: moment("2024-10-11T14:00").toISOString(),
           },
         ],
         description: "Hello World",
+        hours: 4,
       };
       const result = parseIssue(input);
       expect(result).toEqual(expected);
@@ -69,7 +87,7 @@ describe("GITHUB HOUR LOG", () => {
 
     it("ERROR: Several Date with issue one returns error", () => {
       const input =
-        "### LOG\n2024-10-12 09:33 to 11:00\n2024-10-12 09:88 to 11:00\nHello World\n###";
+        "[LOG]\n2024-10-12 09:33 to 11:00\n2024-10-12 09:88 to 11:00\nHello World\n[LOG]";
       const expected = {
         error: "Date 1 from is not valid",
       };
@@ -85,7 +103,7 @@ describe("GITHUB HOUR LOG", () => {
     it("OK: Webhook is called", () => {
       const context = createContext({
         comment: {
-          body: "### LOG\n2024-10-12 09:33 to 11:00\n2024-10-12 09:22 to 11:00\nHello World\n###",
+          body: "[LOG]\n2024-10-12 09:33 to 11:00\n2024-10-12 09:22 to 11:00\nHello World\n[LOG]",
         },
       });
 
@@ -104,6 +122,10 @@ describe("GITHUB HOUR LOG", () => {
         issueName: context.payload.issue.title,
         authorId: context.payload.comment.user.id,
         authorName: context.payload.comment.user.login,
+        commentId: context.payload.comment.id,
+        commentUrl: context.payload.comment.url,
+        issueUrl: context.payload.issue.url,
+        logHours: 3.08,
         logDescription: "Hello World",
         logDates: [
           {

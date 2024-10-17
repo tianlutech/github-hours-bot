@@ -4,8 +4,11 @@ export const createContext = (data: {
   issue?: Record<string, string>;
   comment?: Record<string, string>;
 }) => {
-  console.log("CREATED!");
   return {
+    repo: {
+      owner: faker.person.fullName(),
+      repo: faker.commerce.productName(),
+    },
     payload: {
       issue: {
         id: faker.number.int(),

@@ -7,9 +7,6 @@ import { Issue, IssueComment } from "@octokit/webhooks-types";
 import moment from "moment";
 
 export async function main() {
-  const runId = github.context.runId;
-  const runUrl = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${runId}`;
-
   try {
     const { issue, comment } = github.context.payload as {
       issue: Issue;
@@ -20,6 +17,11 @@ export async function main() {
     }
 
     const octokit = github.getOctokit(ENV.GITHUB_TOKEN);
+    const runId = github.context.runId;
+    console.log(github.context);
+
+    const runUrl = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${runId}`;
+
     const result = parseIssue(comment.body);
     // Is not a log commit, ignore it
     if (!result) {
@@ -34,23 +36,18 @@ export async function main() {
       return;
     }
 
-    WebhookService.callWebhook({
+    await WebhookService.callWebhook({
       issue,
       comment,
       hourLog: result,
     });
 
-    const totalHours = result.dates.reduce(
-      (sum, date) => sum + moment(date.to).diff(moment(date.from), "hours"),
-      0
-    );
-
     await octokit.rest.issues.createComment({
       ...github.context.repo,
       issue_number: +issue.number,
-      body: `${
-        github.context.payload.comment!.user.login
-      } logged ${totalHours} hours`,
+      body: `${github.context.payload.comment!.user.login} logged ${
+        result.hours
+      } hours`,
     });
 
     console.info("Success!");

@@ -35,7 +35,7 @@ function validateDates(datesMatch: string[]):
 }
 
 export function parseIssue(issueBody: string): HourLogResult {
-  const basicPattern = /^### LOG/;
+  const basicPattern = /^\[LOG\]/;
   const basicMatch = issueBody.match(basicPattern);
 
   if (!basicMatch) {
@@ -43,7 +43,7 @@ export function parseIssue(issueBody: string): HourLogResult {
   }
 
   const logPattern =
-    /### LOG\s*((?:\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}\sto\s\d{2}:\d{2}\s?)+)\n([\s\S]*?)\s*(?:\s*###|\s*$)/;
+    /\[LOG\]\s*((?:\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}\sto\s\d{2}:\d{2}\s?)+)\n([\s\S]*?)\s*(?:\s*\[LOG\]|\s*$)/;
   const match = issueBody.match(logPattern);
 
   if (!match) {
@@ -65,11 +65,16 @@ export function parseIssue(issueBody: string): HourLogResult {
     return { error: "Description is empty" };
   }
 
+  const minutes = result.data.reduce((acc, date) => {
+    acc += date.to.diff(date.from, "minutes");
+    return acc;
+  }, 0);
   return {
     dates: result.data.map((date) => ({
       from: date.from.toISOString(),
       to: date.to.toISOString(),
     })),
+    hours: +(minutes / 60).toFixed(2),
     description,
   };
 }

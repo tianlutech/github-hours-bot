@@ -1,5 +1,6 @@
 export type HourLog = {
   dates: Array<{ from: string; to: string }>;
+  hours: number;
   description: string;
 };
 
