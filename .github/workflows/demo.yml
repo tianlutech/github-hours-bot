@@ -1,0 +1,13 @@
+name: Call Log Hours Workflow
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  call-log-hours:
+    uses: tianlutech/github-hours-bot/.github/workflows/log-hours.yml@main
+    with:
+      script_version: "latest"
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}

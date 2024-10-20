@@ -62,12 +62,15 @@ jobs:
           echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
 
       - name: Zip project
-        run: zip -r project.zip dist/*
+        run: |
+          mkdir -p dist/node_modules
+          cp package.json dist/
+          zip -r project.zip dist/*
 
       - name: Create GitHub Release
-        if: ${{ github.event.inputs.create_github_release == true }}
+        if: ${{ github.event.inputs.create_github_release == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Generating release notes for tag: $LATEST_TAG"
-          gh release create v$LATEST_TAG  './dist.zip#Hours Log $LAST_TAG' -F ./CHANGELOG.md
+          gh release create $LATEST_TAG  "./project.zip#Hours Log $LAST_TAG" -F ./CHANGELOG.md

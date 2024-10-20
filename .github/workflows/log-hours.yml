@@ -2,16 +2,19 @@ name: Log Hours
 
 on:
   workflow_call:
+    inputs:
+      script_version:
+        required: true
+        type: string
+        default: latest
+
     secrets:
       WEBHOOK_URL:
         required: true
 jobs:
   log-hours:
     runs-on: ubuntu-latest
-    if: |
-      inputs.event_name == 'issue_comment' &&
-      (inputs.event_action == 'created' || inputs.event_action == 'edited') &&
-      contains(inputs.comment_body, '[LOG]')
+    if: contains(inputs.comment_body, '\\[LOG\\]')
 
     steps:
       - name: Check out repository
@@ -22,13 +25,30 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Download pipe.js
+      - name: Echo comment body
+        run: echo "${{ github.event.comment.body }}"
+
+      - name: Download binary.js
         run: |
-          SCRIPT_URL="https://github.com/yourusername/yourrepo/releases/download/${{ inputs.script_version }}/pipe.js"
-          curl -L -o pipe.js $SCRIPT_URL
+          if [ "${{ inputs.script_version }}" = "latest" ]; then
+           SCRIPT_URL="https://github.com/tianlutech/github-hours-bot/releases/latest/download/project.zip"
+          else
+           SCRIPT_URL="https://github.com/tianlutech/github-hours-bot/releases/download/${{ inputs.script_version }}/project.zip"
+          fi
+          curl -L -o project.zip $SCRIPT_URL
+          unzip project.zip .
+          rm project.zip
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8 # Specify the pnpm version you want to use
+
+      - name: Install production dependencies
+        run: pnpm install --prod
 
       - name: Log Hours
-        run: node pipe.js
+        run: node ./pipe.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}

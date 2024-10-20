@@ -2,15 +2,22 @@
 
 This is a bot for github actions that allow us to log hours on github via issue comments following an special format
 
-```
-### LOG
-DATE HOUR to HOUR
+## Usage
 
-Description
-###
+Once installed, you can log hours by adding a comment to any issue in the following format:
+
+```
+[LOG]
+2023-06-01 09:00 to 17:00
+
+Worked on feature X
+[/LOG]
 ```
 
-## Set up
+The app will automatically process this comment call the webhook and log the hours.
+
+
+## Development
 
 We need to set up act
 
@@ -40,9 +47,9 @@ Run the project, this will watch for changes.
 
 This will run the project in a container architecture
 
-> act issue_comment --secret-file .env --eventpath event.jsonevent.json
+> act issue_comment --secret-file .env --eventpath event.json 
 
-Mac users may add `--container-architecture linux/amd64 `
+Mac users may add `--container-architecture linux/amd64`
 
 For specific scenarios make test cases
 
