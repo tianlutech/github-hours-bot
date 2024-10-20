@@ -4,15 +4,36 @@ This is a bot for github actions that allow us to log hours on github via issue 
 
 ## Usage
 
+Create a workflow that will call the log-hours workflow
+
+[Demo File](.github/workflows/demo.yml)
+```
+name: Demo Hours Workflow 
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  call-log-hours:
+    uses: tianlutech/github-hours-bot/.github/workflows/log-hours.yml@main
+    with:
+      script_version: "latest"
+    secrets:
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
+```
+
+Set your webhook url in the repo secrets
 Once installed, you can log hours by adding a comment to any issue in the following format:
 
 ```
-[LOG]
-2023-06-01 09:00 to 17:00
+[LOG] 2023-06-01 09:00 to 17:00
 
 Worked on feature X
 [/LOG]
 ```
+(Note the end [/LOG] is optional)
 
 The app will automatically process this comment call the webhook and log the hours.
 
