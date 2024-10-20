@@ -50,7 +50,7 @@ jobs:
         run: pnpm build
 
       - name: Run standard-version
-        if: ${{ github.event.inputs.skip_bump == false }}
+        if: ${{ github.event.inputs.skip_bump == 'true' }}
         run: standard-version
 
       - name: Push changes and tags
