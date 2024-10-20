@@ -18,7 +18,6 @@ export async function main() {
 
     const octokit = github.getOctokit(ENV.GITHUB_TOKEN);
     const runId = github.context.runId;
-    console.log(github.context);
 
     const runUrl = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${runId}`;
 

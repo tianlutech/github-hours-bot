@@ -55,6 +55,22 @@ describe("GITHUB HOUR LOG", () => {
       expect(result).toEqual(expected);
     });
 
+    it("OK: Parse Without \\n at the start", () => {
+      const input = "[LOG] 2024-10-02 9:00 to 12:00\n\nTo Log hours 222";
+      const expected = {
+        dates: [
+          {
+            from: moment("2024-10-10T09:00").toISOString(),
+            to: moment("2024-10-10T11:00").toISOString(),
+          },
+        ],
+        hours: 2,
+        description: "Hello World",
+      };
+      const result = parseIssue(input);
+      expect(result).toEqual(expected);
+    });
+
     it("ERROR: Date with issue return error", () => {
       const input = "[LOG]\n2024-34-12 09:88 to 11:00\nHello World\n[LOG]";
       const expected = {
@@ -115,7 +131,6 @@ describe("GITHUB HOUR LOG", () => {
 
       expect(mockedAxios.post).toHaveBeenCalled();
       const params = mockedAxios.post.mock.calls[0][1];
-      console.log({ emv: process.env });
       expect(params).toEqual({
         repository: process.env.GITHUB_REPOSITORY?.split("/")[1] || "",
         issueId: context.payload.issue.id,

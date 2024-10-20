@@ -14,7 +14,7 @@ on:
 jobs:
   log-hours:
     runs-on: ubuntu-latest
-    if: contains(inputs.comment_body, '\\[LOG\\]')
+    # if: contains(github.event.comment.body, '[LOG]')
 
     steps:
       - name: Check out repository
@@ -36,7 +36,8 @@ jobs:
            SCRIPT_URL="https://github.com/tianlutech/github-hours-bot/releases/download/${{ inputs.script_version }}/project.zip"
           fi
           curl -L -o project.zip $SCRIPT_URL
-          unzip project.zip .
+          unzip project.zip
+          cp -r dist/* .
           rm project.zip
 
       - name: Install pnpm
@@ -48,7 +49,10 @@ jobs:
         run: pnpm install --prod
 
       - name: Log Hours
-        run: node ./pipe.js
+        run: |
+          pwd
+          ls
+          node ./pipe.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}

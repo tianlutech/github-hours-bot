@@ -12,7 +12,6 @@ function validateDates(datesMatch: string[]):
     const [datePart, fromTime, toTime] = date
       .split(" ")
       .filter((part) => part !== "to");
-    console.log(datePart, fromTime, toTime);
 
     return {
       from: moment(`${datePart}T${fromTime}`, "YYYY-MM-DDTHH:mm"),
@@ -43,7 +42,8 @@ export function parseIssue(issueBody: string): HourLogResult {
   }
 
   const logPattern =
-    /\[LOG\]\s*((?:\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}\sto\s\d{2}:\d{2}\s?)+)\n([\s\S]*?)\s*(?:\s*\[LOG\]|\s*$)/;
+    /\[LOG\][\s|\n]*((?:\d{4}-\d{2}-\d{2}\s\d{1,2}:\d{2}\sto\s\d{1,2}:\d{2}\s?)+)\n+([\s\S]*?)\s*(?:\s*\[LOG\]|\s*$)/;
+
   const match = issueBody.match(logPattern);
 
   if (!match) {

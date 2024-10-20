@@ -1,4 +1,4 @@
-name: Call Log Hours Workflow
+name: Demo Hours Workflow
 
 on:
   issue_comment:

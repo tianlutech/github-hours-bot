@@ -14,14 +14,12 @@ export default class WebhookService {
     comment: IssueComment;
     hourLog: HourLog;
   }) {
-    const { repo } = context.repo;
-
     if (!issue || !comment) {
       return { error: "This script should only be run on issue comments" };
     }
 
     const data = {
-      repository: repo,
+      repository: `${context.repo.owner}/${context.repo.repo}`,
       issueId: issue.id,
       issueName: issue.title,
       commentId: comment.id,
