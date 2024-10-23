@@ -15,7 +15,7 @@ on:
 jobs:
   log-hours:
     runs-on: ubuntu-latest
-    # if: contains(github.event.comment.body, '[LOG]')
+    if: contains(github.event.comment.body, '[LOG]')
 
     steps:
       - name: Check out repository
