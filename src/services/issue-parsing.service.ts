@@ -14,6 +14,7 @@ function validateDates(datesMatch: string[]):
       .filter((part) => part !== "to");
 
     return {
+      original: date,
       from: moment(`${datePart}T${fromTime}`, "YYYY-MM-DDTHH:mm"),
       to: moment(`${datePart}T${toTime}`, "YYYY-MM-DDTHH:mm"),
     };
@@ -22,7 +23,7 @@ function validateDates(datesMatch: string[]):
   const errors = dates
     .map((date, index) => {
       if (!date.from.isValid() || !date.to.isValid()) {
-        return `Date ${index} from is not valid`;
+        return `Date [${index}] from is not valid: ${date.original}`;
       }
       return [];
     })
@@ -45,7 +46,6 @@ export function parseIssue(issueBody: string): HourLogResult {
     /\[LOG\][\s|\n]*((?:\d{4}-\d{2}-\d{2}\s\d{1,2}:\d{2}\sto\s\d{1,2}:\d{2}\s?)+)\n+([\s\S]*?)\s*(?:\s*\[LOG\]|\s*$)/;
 
   const match = issueBody.match(logPattern);
-
   if (!match) {
     return {
       error:
@@ -55,7 +55,9 @@ export function parseIssue(issueBody: string): HourLogResult {
 
   const [_fullMatch, datesMatch, descriptionMatch] = match;
 
-  const result = validateDates(datesMatch.split("\n"));
+  const result = validateDates(
+    datesMatch.split("\n").filter((line) => line.trim() !== "")
+  );
   if ("error" in result) {
     return { error: result.error };
   }

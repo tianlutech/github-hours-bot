@@ -56,12 +56,12 @@ describe("GITHUB HOUR LOG", () => {
     });
 
     it("OK: Parse Without \\n at the start", () => {
-      const input = "[LOG] 2024-10-02 9:00 to 12:00\n\nTo Log hours 222";
+      const input = "[LOG] 2024-10-02 9:00 to 11:00\n\nHello World";
       const expected = {
         dates: [
           {
-            from: moment("2024-10-10T09:00").toISOString(),
-            to: moment("2024-10-10T11:00").toISOString(),
+            from: moment("2024-10-02T09:00").toISOString(),
+            to: moment("2024-10-02T11:00").toISOString(),
           },
         ],
         hours: 2,
@@ -126,13 +126,12 @@ describe("GITHUB HOUR LOG", () => {
       Object.defineProperty(mockGithub, "context", {
         value: context,
       });
-
       main();
 
       expect(mockedAxios.post).toHaveBeenCalled();
       const params = mockedAxios.post.mock.calls[0][1];
       expect(params).toEqual({
-        repository: process.env.GITHUB_REPOSITORY?.split("/")[1] || "",
+        repository: process.env.GITHUB_REPOSITORY,
         issueId: context.payload.issue.id,
         issueName: context.payload.issue.title,
         authorId: context.payload.comment.user.id,

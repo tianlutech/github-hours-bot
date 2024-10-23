@@ -6,8 +6,8 @@ export const createContext = (data: {
 }) => {
   return {
     repo: {
-      owner: faker.person.fullName(),
-      repo: faker.commerce.productName(),
+      owner: process.env.GITHUB_REPOSITORY?.split("/")[0] || "",
+      repo: process.env.GITHUB_REPOSITORY?.split("/")[1] || "",
     },
     payload: {
       issue: {
