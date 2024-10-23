@@ -105,7 +105,7 @@ describe("GITHUB HOUR LOG", () => {
       const input =
         "[LOG]\n2024-10-12 09:33 to 11:00\n2024-10-12 09:88 to 11:00\nHello World\n[LOG]";
       const expected = {
-        error: "Date 1 from is not valid",
+        error: "Date [1] from is not valid",
       };
       const result = parseIssue(input);
       expect(result).toEqual(expected);
