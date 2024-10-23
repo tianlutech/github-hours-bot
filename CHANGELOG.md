@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/tianlutech/github-hours-bot/compare/v0.0.1...v0.0.2) (2024-10-23)
+
+
+### Bug Fixes
+
+* issue cross-repo permissions ([6285836](https://github.com/tianlutech/github-hours-bot/commit/62858361c4c0eb646b02646ccf29594d907a01ad))
+
 ### 0.0.1 (2024-10-20)
 
 
