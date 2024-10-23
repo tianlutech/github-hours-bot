@@ -9,8 +9,11 @@ on:
         default: latest
 
     secrets:
-      WEBHOOK_URL:
+      webhook_url:
         required: true
+      github_token:
+        required: true
+
 jobs:
   log-hours:
     runs-on: ubuntu-latest
@@ -54,5 +57,5 @@ jobs:
           ls
           node ./pipe.js
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+          WEBHOOK_URL: ${{ secrets.webhook_url }}

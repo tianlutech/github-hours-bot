@@ -10,4 +10,5 @@ jobs:
     with:
       script_version: "latest"
     secrets:
-      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+      webhook_url: ${{ secrets.WEBHOOK_URL }}
+      github_token: ${{ secrets.GITHUB_TOKEN }}
