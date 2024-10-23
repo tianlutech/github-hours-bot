@@ -55,4 +55,5 @@ jobs:
           ls
           node ./pipe.js
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WEBHOOK_URL: ${{ secrets.webhook_url }}
