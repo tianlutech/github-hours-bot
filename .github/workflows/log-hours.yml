@@ -11,8 +11,6 @@ on:
     secrets:
       webhook_url:
         required: true
-      github_token:
-        required: true
 
 jobs:
   log-hours:
@@ -57,5 +55,4 @@ jobs:
           ls
           node ./pipe.js
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
           WEBHOOK_URL: ${{ secrets.webhook_url }}
