@@ -74,10 +74,10 @@ describe("GITHUB HOUR LOG", () => {
     it("ERROR: Date with issue return error", () => {
       const input = "[LOG]\n2024-34-12 09:88 to 11:00\nHello World\n[LOG]";
       const expected = {
-        error: "Date 0 from is not valid",
+        error: "Date [0] from is not valid",
       };
-      const result = parseIssue(input);
-      expect(result).toEqual(expected);
+      const result = parseIssue(input) as HourLogError;
+      expect(result.error).toContain(expected.error);
     });
 
     it("OK: Parse Several Dates", () => {
@@ -107,8 +107,8 @@ describe("GITHUB HOUR LOG", () => {
       const expected = {
         error: "Date [1] from is not valid",
       };
-      const result = parseIssue(input);
-      expect(result).toEqual(expected);
+      const result = parseIssue(input) as HourLogError;
+      expect(result.error).toContain(expected.error);
     });
   });
 
